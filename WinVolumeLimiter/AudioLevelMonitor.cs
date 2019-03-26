@@ -237,6 +237,7 @@ namespace WinVolumeLimiter
                         }
 
                         restoreTimer.Stop();
+                        DontChangeMax = false;
                         Ducked = false;
                     }
                 }
