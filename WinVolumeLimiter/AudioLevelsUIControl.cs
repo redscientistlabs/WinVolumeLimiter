@@ -149,42 +149,6 @@ namespace WinVolumeLimiter
                 new Point(Size.Width, (int)(Size.Height - (Size.Height * (maxVol / maxSample))))
                 );
 
-
-
-
-            // and finally draw the legend
-            // http://csharphelper.com/blog/2015/05/get-font-metrics-in-a-wpf-program-using-c/
-            // http://csharphelper.com/blog/2015/04/render-text-easily-in-a-wpf-program-using-c/
-            var font = SystemFonts.DefaultFont;
-            // first time is to measure the height to draw the legend box
-            {
-                float y_start = 5;
-                float max_label_width = 0; 
-                var measure = g.MeasureString(name, font);
-                y_start += measure.Height;             
-                max_label_width = Math.Max(max_label_width,measure.Width);
-                y_start += 10; // vertical padding
-                // draw the legend box
-                g.FillRectangle(Brushes.Black,5,10,max_label_width + 10,y_start);
-                g.DrawRectangle(greenPen,5,10,max_label_width + 10,y_start);
-            }
-
-
-            // now draw the legend labels
-            {
-                float y_start = 5;
-
-
-                Pen pen = pens[0];
-                var brush = pen.Brush;
-
-                var measure = g.MeasureString(name,font);
-                y_start += measure.Height;
-                g.DrawString(name, font, brush, new PointF(10, y_start));
-
-                y_start += 10; // vertical padding
-            }
-
             dispatcherTimer.Start();
         }
 
