@@ -161,7 +161,7 @@
             this.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
-            this.Text = "Volume Limiter";
+            this.Text = "Windows Volume Limiter";
             ((System.ComponentModel.ISupportInitialize)(this.updownSamplingDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.updownRestoreDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbPercent)).EndInit();

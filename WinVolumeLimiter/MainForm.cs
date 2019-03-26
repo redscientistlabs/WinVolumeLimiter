@@ -19,7 +19,6 @@ namespace WinVolumeLimiter
         public MainForm()
         {
             InitializeComponent();
-            this.Text = "SoundLevelMonitorAndLimiter";
             audioMonitor = new AudioLevelMonitor();
             audioLevelsControl.AudioMonitor = audioMonitor;
             tbProcessName.DataBindings.Add("Text",
