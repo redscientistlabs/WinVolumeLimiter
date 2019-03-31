@@ -12,46 +12,83 @@ namespace WinVolumeLimiter
 {
     public class AudioLevelMonitor
     {
-        System.Timers.Timer dispatchingTimer;
+        System.Timers.Timer sampleTimer;
         System.Timers.Timer restoreTimer;
-        public int interval_ms { get; set; } = 20;
-        public int restoreDelay { get; set; } = 200;
+        private int intervalms = 25;
+
+        public int Intervalms
+        {
+            get
+            {
+                return intervalms; 
+            }
+            set
+            {
+                intervalms = value;
+                sampleTimer.Interval = intervalms;
+            }
+        }
+
+        private int restoreDelay = 500;
+
+        public int RestoreDelay
+        {
+            get { return restoreDelay; }
+            set
+            {
+                restoreDelay = value;
+                restoreTimer.Interval = restoreDelay;
+            }
+        }
+
         private SampleInfo info = new SampleInfo();
         IDictionary<string, List<double>> sessionIdToAudioSamples = new Dictionary<string, List<double>>();
         List<double> samples = new List<double>();
         int maxSamplesToKeep = 1000;
-        private volatile float oldVolume = 0f;
-        public float MaxVolume = 1.0f;
+        private volatile float oldVolume = -1f;
+        public float MonitorVolume = 1.0f;
+        public float DuckingVolume = .66f;
+        private float volDiff;
         public bool Ducked = false;
         public bool DontChangeMax;
-        
-        public string processName { get; set; } = String.Empty;
+
+        public volatile string processName;
         private int pid;
 
-        public AudioLevelMonitor()
+        public AudioLevelMonitor(string ProcessName)
         {
-            dispatchingTimer = new System.Timers.Timer(interval_ms);
-            dispatchingTimer.Elapsed += DispatchingTimer_Elapsed;
-            dispatchingTimer.AutoReset = false;
-            dispatchingTimer.Start();
-
-            restoreTimer = new System.Timers.Timer(restoreDelay);
-            restoreTimer.Elapsed += RestoreTimer_Elapsed;
-            restoreTimer.AutoReset = false;
+            processName = ProcessName;
+            initTimers();
         }
-        public void Stop() {
-            dispatchingTimer.Stop();
+
+        public void Stop()
+        {
+            sampleTimer.Stop();
+            restoreTimer.Stop();
         }
 
         public delegate void NewAudioSamplesEvent(AudioLevelMonitor monitor);
         public event NewAudioSamplesEvent NewAudioSamplesEventListeners;
 
-        private void DispatchingTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e) {
+
+        private void initTimers()
+        {
+            sampleTimer = new System.Timers.Timer(Intervalms);
+            sampleTimer.Elapsed += SampleTimerElapsed;
+            sampleTimer.AutoReset = false;
+            sampleTimer.Start();
+
+            restoreTimer = new System.Timers.Timer(RestoreDelay);
+            restoreTimer.Elapsed += RestoreTimer_Elapsed;
+            restoreTimer.AutoReset = false;
+        }
+
+        private void SampleTimerElapsed(object sender, System.Timers.ElapsedEventArgs e) {
 
             if (processName == "")
             {
                 Thread.Sleep(1000);
-                dispatchingTimer.Start(); // trigger next timer
+                sampleTimer.Start(); // trigger next timer
                 return;
             }
 
@@ -62,13 +99,13 @@ namespace WinVolumeLimiter
                 ActiveSession = getSession();
                 if (ActiveSession == null)
                 {
-                    Thread.Sleep(1000);
-                    dispatchingTimer.Start(); // trigger next timer
+                    Thread.Sleep(1000); //We can do this since we're manually controlling the timer
+                    sampleTimer.Start(); // trigger next timer
                     return;
                 }
             }
             this.CheckAudioLevels();
-            dispatchingTimer.Start(); // trigger next timer
+            sampleTimer.Start(); // trigger next timer
         }
         private void truncateSamples(List<double> samples) {
             int excessSamples = samples.Count - maxSamplesToKeep;
@@ -161,7 +198,9 @@ namespace WinVolumeLimiter
             }
         }
 
+        private volatile bool lastCheckOverMax = false;
         public void CheckAudioLevels() {
+            volDiff = MonitorVolume - DuckingVolume;
             lock (this) {
                 try
                 {
@@ -177,44 +216,44 @@ namespace WinVolumeLimiter
                        truncateSamples(samples);
                         using (var simpleVolume = session.QueryInterface<SimpleAudioVolume>())
                         {
+                            bool thisCheckOverMax = false;
                             float volume = simpleVolume.MasterVolume;
-                            if (peak > MaxVolume && simpleVolume.MasterVolume >= MaxVolume)
+
+                            //If we're ducked, we guess what the actual volume would have been if we weren't ducked.
+                            //The volume slider is "essentially linear" according to MS.
+                            if (Ducked)
                             {
-                                if (!Ducked || DontChangeMax)
-                                {
-                                    if (!DontChangeMax)
-                                    {
-                                        oldVolume = volume;
-                                        DontChangeMax = false;
-                                    }
-                                    Ducked = true;
-                                    simpleVolume.MasterVolume = MaxVolume;
+                                peak = peak + volDiff + .02f; //Add .02 to try and account for that "essentially" part
+                            }
+                                
+                            if (peak > MonitorVolume)
+                            {
+                                thisCheckOverMax = true;
+                            }
+
+                            if (lastCheckOverMax && thisCheckOverMax)
+                            {
+                                 Ducked = true;
+                                 if (Math.Round(oldVolume) == -1)
+                                 {
+                                     oldVolume = simpleVolume.MasterVolume;
                                 }
+
+                                 simpleVolume.MasterVolume = DuckingVolume;
+
+                            }
+                            if (Ducked && thisCheckOverMax)
+                            {
                                 restoreTimer.Stop();
                                 restoreTimer.Start();
                             }
+                            lastCheckOverMax = true;
                         }
                     }
                 } catch (CoreAudioAPIException e) {
                     Console.WriteLine("AudioLevelMonitor exception: " + e.ToString());
                     return;
                 }
-
-                // before we are done, we need to add samples to anyone we didn't see
-                /*
-                var deleteSamplesForPids = new HashSet<string>();
-                foreach (var kvp in sessionIdToAudioSamples) {
-                    if (!seenPids.Contains(kvp.Key)) {
-                        kvp.Value.Add(0.0);
-                        truncateSamples(kvp.Value);
-                        if (areSamplesEmpty(kvp.Value)) {
-                            deleteSamplesForPids.Add(kvp.Key);
-                        }
-                    }
-                }
-                foreach (var sessionid in deleteSamplesForPids) {
-                    sessionIdToAudioSamples.Remove(sessionid);
-                }*/
             } // lock
             System.GC.Collect();
             NewAudioSamplesEventListeners?.Invoke(this);
@@ -227,18 +266,19 @@ namespace WinVolumeLimiter
                 try
                 {
                     var session = ActiveSession;
-
                     using (var simpleVolume = session.QueryInterface<SimpleAudioVolume>())
                     {
                         var vol = simpleVolume.MasterVolume;
-                        for (float i = vol; i < oldVolume; i += .01f)
+                        for (float i = vol; i <= oldVolume; i += .01f)
                         {
                             simpleVolume.MasterVolume = i;
                         }
+                        simpleVolume.MasterVolume = oldVolume;
 
                         restoreTimer.Stop();
                         DontChangeMax = false;
                         Ducked = false;
+                        oldVolume = -1;
                     }
                 }
                 catch (CoreAudioAPIException ex)

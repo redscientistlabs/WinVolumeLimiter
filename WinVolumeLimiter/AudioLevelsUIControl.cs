@@ -26,13 +26,8 @@ namespace WinVolumeLimiter
 
             // populate pens                        
             pens.Add(new Pen(Brushes.Crimson, 1.0f));
-            pens.Add(new Pen(Brushes.DarkKhaki, 1.0f));
             pens.Add(new Pen(Brushes.FloralWhite, 1.0f));
             pens.Add(new Pen(Brushes.HotPink, 1.0f));
-            pens.Add(new Pen(Brushes.Yellow, 1.0f));
-            pens.Add(new Pen(Brushes.Lavender, 1.0f));
-            pens.Add(new Pen(Brushes.Cyan, 1.0f));
-            pens.Add(new Pen(Brushes.Maroon, 1.0f));
 
 
             SetStyle(ControlStyles.ResizeRedraw, true);
@@ -48,13 +43,13 @@ namespace WinVolumeLimiter
             get { return _audioMonitor; }
             set {
                 _audioMonitor = value; 
-                if (_audioMonitor != null) {
+                if (_audioMonitor != null)
+                {
+                    dispatcherTimer.Stop();
+                    dispatcherTimer.Start();
                 }
             }
         }
-
-        private void _audioMonitor_NewAudioSamplesEventListeners(AudioLevelMonitor monitor) {
-        }      
 
         private void RenderVUMeterGrid(Graphics g, double maxSample) {
             // make it look like a VU meter
@@ -89,26 +84,28 @@ namespace WinVolumeLimiter
             return maxSample;
         }*/
 
-        int nextPenToAllocate = -1;
-        private Pen penForSessionId(string sessionId) {
-            if (nextPenToAllocate < 0) {
-                nextPenToAllocate = Math.Abs((int)DateTime.Now.Ticks) % (pens.Count - 1);
-            }
+        private void DrawLines(Graphics g, double maxSample)
+        {
+            var monitorVol = AudioMonitor.MonitorVolume;
+            Pen limitPen = pens[1];
+            g.DrawLine(limitPen,
+                new Point(0, (int)(Size.Height - (Size.Height * (monitorVol / maxSample)))),
+                new Point(Size.Width, (int)(Size.Height - (Size.Height * (monitorVol / maxSample))))
+            );
 
-            if (_sessionIdToPen.ContainsKey(sessionId)) {
-                return _sessionIdToPen[sessionId];
-            }
-            else {
-                // allocate a new pen
-                var allocatedPen = _sessionIdToPen[sessionId] = pens[nextPenToAllocate];
-                nextPenToAllocate = (nextPenToAllocate + 1) % (pens.Count - 1);
-                return allocatedPen;
-            }
-        }      
-
+            var duckingVol = AudioMonitor.DuckingVolume;
+            Pen duckingPen = pens[2];
+            g.DrawLine(duckingPen,
+                new Point(0, (int)(Size.Height - (Size.Height * (duckingVol / maxSample)))),
+                new Point(Size.Width, (int)(Size.Height - (Size.Height * (duckingVol / maxSample))))
+            );
+        }
         protected override void OnPaint(PaintEventArgs pe) {
             base.OnPaint(pe);
             var g = pe.Graphics;
+
+            double maxSample = 1.2f;
+
 
             // if we have no AudioMonitor draw a blank grid
             if (AudioMonitor == null) {
@@ -117,7 +114,6 @@ namespace WinVolumeLimiter
             }
             // otherwise get samples, and draw a scaled rgid            
             var activeSamples = AudioMonitor.GetActiveSamples();
-            double maxSample = 1.4f;
             maxSample = Math.Max(maxSample, 0.05); // make sure we don't divide by zero
             RenderVUMeterGrid(g, maxSample);
 
@@ -142,13 +138,13 @@ namespace WinVolumeLimiter
                     last_sample = sample;
                 }
             }
-            Pen limitPen = pens[1];
-            var maxVol = AudioMonitor.MaxVolume;
-            g.DrawLine(limitPen,
-                new Point(0, (int)(Size.Height - (Size.Height * (maxVol / maxSample)))),
-                new Point(Size.Width, (int)(Size.Height - (Size.Height * (maxVol / maxSample))))
-                );
-
+            else
+            {
+                g.DrawLine(audioLevelPen,
+                    new Point(Size.Width - 10, (int)(Size.Height - (Size.Height * (0 / maxSample)))),
+                    new Point(Size.Width, (int)(Size.Height - (Size.Height * (0 / maxSample)))));
+            }
+            DrawLines(g, maxSample);
             dispatcherTimer.Start();
         }
 
