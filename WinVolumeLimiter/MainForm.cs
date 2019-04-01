@@ -27,11 +27,15 @@ namespace WinVolumeLimiter
             tbMonitorVolume.ValueChanged += tbMonitorVolume_ValueChanged;
             tbDuckingVolume.ValueChanged += tbDuckingVolume_ValueChanged;
 
+            this.FormClosing += (o, e) => audioMonitor?.Stop();
+
             this.Text = $"Windows Volume Limiter v{version}";
 
             initialized = true;
             //Set up the actual volume and have it propogate
             tbMonitorVolume_ValueChanged(null,null);
+
+
         }
 
         private void UpdownRestoreDelay_ValueChanged(object sender, EventArgs e)

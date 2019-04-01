@@ -65,6 +65,7 @@ namespace WinVolumeLimiter
         {
             sampleTimer.Stop();
             restoreTimer.Stop();
+            RestoreTimer_Elapsed(null, null);
         }
 
         public delegate void NewAudioSamplesEvent(AudioLevelMonitor monitor);
