@@ -109,7 +109,7 @@ namespace WinVolumeLimiter
 
             // if we have no AudioMonitor draw a blank grid
             if (AudioMonitor == null) {
-                RenderVUMeterGrid(g, 1.0);
+                RenderVUMeterGrid(g, 1.40);
                 return;
             }
             // otherwise get samples, and draw a scaled rgid            

@@ -14,7 +14,7 @@ namespace WinVolumeLimiter
 {
     public sealed partial class MainForm : Form
     {
-        private string version = "1.0";
+        private string version = "1.1";
         AudioLevelMonitor audioMonitor;
         private bool updating = false;
         private bool initialized = false;
@@ -26,6 +26,7 @@ namespace WinVolumeLimiter
             updownRestoreDelay.ValueChanged += UpdownRestoreDelay_ValueChanged;
             tbMonitorVolume.ValueChanged += tbMonitorVolume_ValueChanged;
             tbDuckingVolume.ValueChanged += tbDuckingVolume_ValueChanged;
+            tbMasterVolume.ValueChanged += tbMasterVolume_ValueChanged;
 
             this.FormClosing += (o, e) => audioMonitor?.Stop();
 
@@ -94,6 +95,12 @@ namespace WinVolumeLimiter
             updating = false;
         }
 
+        private void tbMasterVolume_ValueChanged(object sender, EventArgs e)
+        {
+            if(audioMonitor != null)
+                audioMonitor.MasterVolume = tbMasterVolume.Value * .01f;
+        }
+
         private void BtnChooseProcess_Click(object sender, EventArgs e)
         {
             var selectProcess = new SelectProcess();
@@ -104,9 +111,11 @@ namespace WinVolumeLimiter
 
                 tbProcessName.Text = selectProcess.SelectedProcess;
                 audioMonitor.Stop();
+                audioMonitor.MasterVolume = (tbMasterVolume.Value * .01f);
                 audioMonitor = new AudioLevelMonitor(selectProcess.SelectedProcess);
                 audioMonitor.RestoreDelay = Convert.ToInt32(updownRestoreDelay.Value);
                 audioMonitor.Intervalms = Convert.ToInt32(updownSamplingDelay.Value);
+                tbMasterVolume.Value = Convert.ToInt32(audioMonitor.MasterVolume * 100);
 
                 initialized = true;
                 //Set up the actual volume and have it propogate
@@ -114,16 +123,6 @@ namespace WinVolumeLimiter
                 tbDuckingVolume_ValueChanged(null, null);
                 audioLevelsControl.AudioMonitor = audioMonitor;
             }
-
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void CbLinked_CheckedChanged(object sender, EventArgs e)
-        {
 
         }
     }
