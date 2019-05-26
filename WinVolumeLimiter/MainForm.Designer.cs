@@ -41,6 +41,7 @@
             this.pnLinkedInner = new WinVolumeLimiter.PanelCustomBorder();
             this.updownLinkRatio = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
+            this.cbEnabled = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.updownSamplingDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.updownRestoreDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbMonitorVolume)).BeginInit();
@@ -249,11 +250,24 @@
             this.label6.TabIndex = 15;
             this.label6.Text = "Linking Ratio";
             // 
+            // cbEnabled
+            // 
+            this.cbEnabled.AutoSize = true;
+            this.cbEnabled.Location = new System.Drawing.Point(12, 419);
+            this.cbEnabled.Name = "cbEnabled";
+            this.cbEnabled.Size = new System.Drawing.Size(68, 17);
+            this.cbEnabled.TabIndex = 17;
+            this.cbEnabled.Text = "Enabled";
+            this.cbEnabled.UseVisualStyleBackColor = true;
+            this.cbEnabled.CheckedChanged += new System.EventHandler(this.CbEnabled_CheckedChanged);
+            // 
             // MainForm
             // 
+            this.AllowDrop = true;
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
             this.ClientSize = new System.Drawing.Size(360, 442);
+            this.Controls.Add(this.cbEnabled);
             this.Controls.Add(this.cbLinked);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -302,6 +316,7 @@
         private System.Windows.Forms.NumericUpDown updownLinkRatio;
         private System.Windows.Forms.Label label6;
         private PanelCustomBorder pnLinkedInner;
+        private System.Windows.Forms.CheckBox cbEnabled;
     }
 }
 

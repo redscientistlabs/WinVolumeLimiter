@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +16,7 @@ namespace WinVolumeLimiter
 {
     public sealed partial class MainForm : Form
     {
-        private string version = "1.0";
+        private string version = "1.2";
         AudioLevelMonitor audioMonitor;
         private bool updating = false;
         private bool initialized = false;
@@ -26,13 +28,36 @@ namespace WinVolumeLimiter
             updownRestoreDelay.ValueChanged += UpdownRestoreDelay_ValueChanged;
             tbMonitorVolume.ValueChanged += tbMonitorVolume_ValueChanged;
             tbDuckingVolume.ValueChanged += tbDuckingVolume_ValueChanged;
-
+            this.DragDrop += MainForm_DragDrop;
+            this.DragEnter += MainForm_DragEnter;
             this.Text = $"Windows Volume Limiter v{version}";
 
             initialized = true;
             //Set up the actual volume and have it propogate
             tbMonitorVolume_ValueChanged(null,null);
         }
+
+        private void MainForm_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (files.Length > 0)
+            {
+                var file = files[0];
+                if (file.EndsWith(".exe",StringComparison.OrdinalIgnoreCase))
+                {
+                    ProcessStartInfo p = new ProcessStartInfo();
+                    p.FileName = file;
+                    p.WorkingDirectory = Path.GetDirectoryName(file) ?? throw new InvalidOperationException();
+                    Process.Start(p);
+                }
+            }
+        }
+
+        void MainForm_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
+        }
+
 
         private void UpdownRestoreDelay_ValueChanged(object sender, EventArgs e)
         {
@@ -94,23 +119,26 @@ namespace WinVolumeLimiter
         {
             var selectProcess = new SelectProcess();
             DialogResult dr = selectProcess.ShowDialog();
-            if(dr == DialogResult.OK)
-            {
-                initialized = false;
+            if (dr == DialogResult.OK)
+                StartNewMonitor(selectProcess.SelectedProcess);
 
-                tbProcessName.Text = selectProcess.SelectedProcess;
-                audioMonitor.Stop();
-                audioMonitor = new AudioLevelMonitor(selectProcess.SelectedProcess);
-                audioMonitor.RestoreDelay = Convert.ToInt32(updownRestoreDelay.Value);
-                audioMonitor.Intervalms = Convert.ToInt32(updownSamplingDelay.Value);
+        }
 
-                initialized = true;
-                //Set up the actual volume and have it propogate
-                tbMonitorVolume_ValueChanged(null, null);
-                tbDuckingVolume_ValueChanged(null, null);
-                audioLevelsControl.AudioMonitor = audioMonitor;
-            }
+        private void StartNewMonitor(string processName)
+        {
+            initialized = false;
 
+            tbProcessName.Text = processName;
+            audioMonitor.Stop();
+            audioMonitor = new AudioLevelMonitor(processName);
+            audioMonitor.RestoreDelay = Convert.ToInt32(updownRestoreDelay.Value);
+            audioMonitor.Intervalms = Convert.ToInt32(updownSamplingDelay.Value);
+
+            initialized = true;
+            //Set up the actual volume and have it propogate
+            tbMonitorVolume_ValueChanged(null, null);
+            tbDuckingVolume_ValueChanged(null, null);
+            audioLevelsControl.AudioMonitor = audioMonitor;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -121,6 +149,16 @@ namespace WinVolumeLimiter
         private void CbLinked_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void CbEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbEnabled.Checked)
+            {
+                audioMonitor?.Start();
+            }
+            else
+                audioMonitor?.Stop();
         }
     }
 
