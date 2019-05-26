@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using CSCore.CoreAudioAPI;
 
 namespace WinVolumeLimiter
@@ -45,9 +46,24 @@ namespace WinVolumeLimiter
         IDictionary<string, List<double>> sessionIdToAudioSamples = new Dictionary<string, List<double>>();
         List<double> samples = new List<double>();
         int maxSamplesToKeep = 1000;
-        private volatile float oldVolume = -1f;
-        public float MonitorVolume = 1.0f;
-        public float DuckingVolume = .66f;
+
+        private volatile float masterVolume = -1f;
+
+        public float MasterVolume
+        {
+            get
+            {
+                return getMasterVolume();
+            }
+            set
+            {
+                masterVolume = value;
+                setMasterVolume();
+            }
+        }
+
+        public float MonitorVolume = .75f;
+        public float DuckingVolume = .375f;
         private float volDiff;
         public bool Ducked = false;
         public bool DontChangeMax;
@@ -63,8 +79,10 @@ namespace WinVolumeLimiter
 
         public void Stop()
         {
-            sampleTimer.Stop();
-            restoreTimer.Stop();
+            sampleTimer?.Stop();
+            restoreTimer?.Stop();
+            if(Ducked)
+                RestoreTimer_Elapsed(null, null);
         }
         public void Start()
         {
@@ -210,15 +228,13 @@ namespace WinVolumeLimiter
                 try
                 {
                     var session = ActiveSession;
-
-
                     var peak = 0.0f;
                     using (var audioMeterInformation = session.QueryInterface<AudioMeterInformation>())
                     {
                         peak = audioMeterInformation.GetPeakValue();
 
-                       samples.Add(peak);
-                       truncateSamples(samples);
+                        samples.Add(peak);
+                        truncateSamples(samples);
                         using (var simpleVolume = session.QueryInterface<SimpleAudioVolume>())
                         {
                             bool thisCheckOverMax = false;
@@ -239,13 +255,7 @@ namespace WinVolumeLimiter
                             if (lastCheckOverMax && thisCheckOverMax)
                             {
                                  Ducked = true;
-                                 if (Math.Round(oldVolume) == -1)
-                                 {
-                                     oldVolume = simpleVolume.MasterVolume;
-                                }
-
                                  simpleVolume.MasterVolume = DuckingVolume;
-
                             }
                             if (Ducked && thisCheckOverMax)
                             {
@@ -274,16 +284,15 @@ namespace WinVolumeLimiter
                     using (var simpleVolume = session.QueryInterface<SimpleAudioVolume>())
                     {
                         var vol = simpleVolume.MasterVolume;
-                        for (float i = vol; i <= oldVolume; i += .01f)
+                        for (float i = vol; i <= MasterVolume; i += .01f)
                         {
                             simpleVolume.MasterVolume = i;
                         }
-                        simpleVolume.MasterVolume = oldVolume;
+                        simpleVolume.MasterVolume = MasterVolume;
 
                         restoreTimer.Stop();
                         DontChangeMax = false;
                         Ducked = false;
-                        oldVolume = -1;
                     }
                 }
                 catch (CoreAudioAPIException ex)
@@ -305,5 +314,66 @@ namespace WinVolumeLimiter
             }
         }
 
+        private float getMasterVolume()
+        {
+            if (masterVolume == -1f)
+            {
+                if (ActiveSession == null)
+                {
+                    //So this is stupid but we can't get a session on the main thread;
+                    var t = new Thread(() =>
+                    {
+                        lock (this)
+                        {
+                            try
+                            {
+                                ActiveSession = getSession();
+                                var session = ActiveSession;
+                                using (var simpleVolume = session.QueryInterface<SimpleAudioVolume>())
+                                {
+                                    masterVolume = simpleVolume.MasterVolume;
+                                }
+                            }
+                            catch (CoreAudioAPIException ex)
+                            {
+                                Console.WriteLine("AudioLevelMonitor exception: " + ex.ToString());
+                            }
+                        }
+                    });
+                    t.Start();
+                    t.Join();
+                }
+            }
+            return masterVolume;
+        }
+        private async void setMasterVolume()
+        {
+            if (ActiveSession == null)
+                return;
+
+            var t = new Thread(() =>
+            {
+                lock (this)
+                {
+                    try
+                    {
+                        var session = ActiveSession;
+                        using (var simpleVolume = session.QueryInterface<SimpleAudioVolume>())
+                        {
+                            if (!Ducked)
+                                simpleVolume.MasterVolume = MasterVolume;
+                        }
+                    }
+                    catch (CoreAudioAPIException ex)
+                    {
+                        Console.WriteLine("AudioLevelMonitor exception: " + ex.ToString());
+                        return;
+                    }
+                }
+            });
+
+            t.Start();
+            t.Join();
+        }
     }
 }

@@ -30,11 +30,16 @@ namespace WinVolumeLimiter
             tbDuckingVolume.ValueChanged += tbDuckingVolume_ValueChanged;
             this.DragDrop += MainForm_DragDrop;
             this.DragEnter += MainForm_DragEnter;
+            tbMasterVolume.ValueChanged += tbMasterVolume_ValueChanged;
+
+            this.FormClosing += (o, e) => audioMonitor?.Stop();
             this.Text = $"Windows Volume Limiter v{version}";
 
             initialized = true;
             //Set up the actual volume and have it propogate
             tbMonitorVolume_ValueChanged(null,null);
+
+
         }
 
         private void MainForm_DragDrop(object sender, DragEventArgs e)
@@ -115,32 +120,35 @@ namespace WinVolumeLimiter
             updating = false;
         }
 
+        private void tbMasterVolume_ValueChanged(object sender, EventArgs e)
+        {
+            if(audioMonitor != null)
+                audioMonitor.MasterVolume = tbMasterVolume.Value * .01f;
+        }
+
         private void BtnChooseProcess_Click(object sender, EventArgs e)
         {
             var selectProcess = new SelectProcess();
             DialogResult dr = selectProcess.ShowDialog();
             if (dr == DialogResult.OK)
                 StartNewMonitor(selectProcess.SelectedProcess);
-
         }
 
         private void StartNewMonitor(string processName)
         {
             initialized = false;
-
             tbProcessName.Text = processName;
             audioMonitor.Stop();
             audioMonitor = new AudioLevelMonitor(processName);
             audioMonitor.RestoreDelay = Convert.ToInt32(updownRestoreDelay.Value);
             audioMonitor.Intervalms = Convert.ToInt32(updownSamplingDelay.Value);
-
+            tbMasterVolume.Value = Convert.ToInt32(audioMonitor.MasterVolume * 100);
             initialized = true;
             //Set up the actual volume and have it propogate
             tbMonitorVolume_ValueChanged(null, null);
             tbDuckingVolume_ValueChanged(null, null);
             audioLevelsControl.AudioMonitor = audioMonitor;
         }
-
         private void MainForm_Load(object sender, EventArgs e)
         {
 

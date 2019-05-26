@@ -37,15 +37,19 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.cbLinked = new System.Windows.Forms.CheckBox();
+            this.tbMasterVolume = new System.Windows.Forms.TrackBar();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.audioLevelsControl = new WinVolumeLimiter.AudioLevelsUIControl();
             this.pnLinkedInner = new WinVolumeLimiter.PanelCustomBorder();
-            this.updownLinkRatio = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
             this.cbEnabled = new System.Windows.Forms.CheckBox();
+            this.updownLinkRatio = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.updownSamplingDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.updownRestoreDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbMonitorVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbDuckingVolume)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbMasterVolume)).BeginInit();
             this.pnLinkedInner.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.updownLinkRatio)).BeginInit();
             this.SuspendLayout();
@@ -56,7 +60,7 @@
             this.btnChooseProcess.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnChooseProcess.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.btnChooseProcess.ForeColor = System.Drawing.Color.Black;
-            this.btnChooseProcess.Location = new System.Drawing.Point(12, 285);
+            this.btnChooseProcess.Location = new System.Drawing.Point(7, 275);
             this.btnChooseProcess.Name = "btnChooseProcess";
             this.btnChooseProcess.Size = new System.Drawing.Size(106, 23);
             this.btnChooseProcess.TabIndex = 1;
@@ -68,7 +72,7 @@
             // 
             this.updownSamplingDelay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.updownSamplingDelay.ForeColor = System.Drawing.Color.White;
-            this.updownSamplingDelay.Location = new System.Drawing.Point(276, 310);
+            this.updownSamplingDelay.Location = new System.Drawing.Point(12, 388);
             this.updownSamplingDelay.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -87,7 +91,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(245, 290);
+            this.label1.Location = new System.Drawing.Point(9, 373);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(109, 13);
             this.label1.TabIndex = 3;
@@ -99,7 +103,7 @@
             this.tbProcessName.Enabled = false;
             this.tbProcessName.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.tbProcessName.ForeColor = System.Drawing.Color.White;
-            this.tbProcessName.Location = new System.Drawing.Point(12, 310);
+            this.tbProcessName.Location = new System.Drawing.Point(7, 302);
             this.tbProcessName.Name = "tbProcessName";
             this.tbProcessName.ReadOnly = true;
             this.tbProcessName.Size = new System.Drawing.Size(106, 22);
@@ -109,7 +113,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(139, 290);
+            this.label2.Location = new System.Drawing.Point(9, 329);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(100, 13);
             this.label2.TabIndex = 7;
@@ -119,7 +123,7 @@
             // 
             this.updownRestoreDelay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.updownRestoreDelay.ForeColor = System.Drawing.Color.White;
-            this.updownRestoreDelay.Location = new System.Drawing.Point(167, 310);
+            this.updownRestoreDelay.Location = new System.Drawing.Point(12, 345);
             this.updownRestoreDelay.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -137,30 +141,30 @@
             // tbMonitorVolume
             // 
             this.tbMonitorVolume.LargeChange = 10;
-            this.tbMonitorVolume.Location = new System.Drawing.Point(101, 352);
-            this.tbMonitorVolume.Maximum = 100;
+            this.tbMonitorVolume.Location = new System.Drawing.Point(120, 338);
+            this.tbMonitorVolume.Maximum = 130;
             this.tbMonitorVolume.Name = "tbMonitorVolume";
-            this.tbMonitorVolume.Size = new System.Drawing.Size(247, 45);
+            this.tbMonitorVolume.Size = new System.Drawing.Size(222, 45);
             this.tbMonitorVolume.TabIndex = 8;
             this.tbMonitorVolume.TickFrequency = 10;
-            this.tbMonitorVolume.Value = 50;
+            this.tbMonitorVolume.Value = 75;
             // 
             // tbDuckingVolume
             // 
             this.tbDuckingVolume.LargeChange = 10;
-            this.tbDuckingVolume.Location = new System.Drawing.Point(101, 395);
+            this.tbDuckingVolume.Location = new System.Drawing.Point(120, 388);
             this.tbDuckingVolume.Maximum = 100;
             this.tbDuckingVolume.Name = "tbDuckingVolume";
-            this.tbDuckingVolume.Size = new System.Drawing.Size(247, 45);
+            this.tbDuckingVolume.Size = new System.Drawing.Size(222, 45);
             this.tbDuckingVolume.TabIndex = 9;
             this.tbDuckingVolume.TickFrequency = 10;
-            this.tbDuckingVolume.Value = 25;
+            this.tbDuckingVolume.Value = 33;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.Transparent;
-            this.label3.Location = new System.Drawing.Point(98, 340);
+            this.label3.Location = new System.Drawing.Point(120, 323);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(90, 13);
             this.label3.TabIndex = 10;
@@ -170,7 +174,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.Transparent;
-            this.label4.Location = new System.Drawing.Point(98, 383);
+            this.label4.Location = new System.Drawing.Point(120, 373);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(91, 13);
             this.label4.TabIndex = 11;
@@ -181,13 +185,44 @@
             this.cbLinked.AutoSize = true;
             this.cbLinked.Checked = true;
             this.cbLinked.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbLinked.Location = new System.Drawing.Point(11, 346);
+            this.cbLinked.Location = new System.Drawing.Point(282, 275);
             this.cbLinked.Name = "cbLinked";
             this.cbLinked.Size = new System.Drawing.Size(60, 17);
             this.cbLinked.TabIndex = 12;
             this.cbLinked.Text = "Linked";
             this.cbLinked.UseVisualStyleBackColor = true;
-            this.cbLinked.CheckedChanged += new System.EventHandler(this.CbLinked_CheckedChanged);
+            // 
+            // tbMasterVolume
+            // 
+            this.tbMasterVolume.LargeChange = 10;
+            this.tbMasterVolume.Location = new System.Drawing.Point(7, 429);
+            this.tbMasterVolume.Maximum = 100;
+            this.tbMasterVolume.Name = "tbMasterVolume";
+            this.tbMasterVolume.Size = new System.Drawing.Size(335, 45);
+            this.tbMasterVolume.TabIndex = 17;
+            this.tbMasterVolume.TickFrequency = 10;
+            this.tbMasterVolume.Value = 100;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.BackColor = System.Drawing.Color.Transparent;
+            this.label5.Location = new System.Drawing.Point(9, 417);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(145, 13);
+            this.label5.TabIndex = 18;
+            this.label5.Text = "Application Master Volume";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Segoe UI", 6.5F);
+            this.label7.ForeColor = System.Drawing.Color.White;
+            this.label7.Location = new System.Drawing.Point(218, 324);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(123, 12);
+            this.label7.TabIndex = 19;
+            this.label7.Text = "(Monitor Volume out of 130%)";
             // 
             // audioLevelsControl
             // 
@@ -197,7 +232,7 @@
             this.audioLevelsControl.Location = new System.Drawing.Point(7, 9);
             this.audioLevelsControl.Margin = new System.Windows.Forms.Padding(0);
             this.audioLevelsControl.Name = "audioLevelsControl";
-            this.audioLevelsControl.Size = new System.Drawing.Size(346, 257);
+            this.audioLevelsControl.Size = new System.Drawing.Size(335, 257);
             this.audioLevelsControl.TabIndex = 0;
             this.audioLevelsControl.Text = "audioLevelsUIControl1";
             // 
@@ -207,13 +242,23 @@
             this.pnLinkedInner.BorderColor = System.Drawing.Color.Empty;
             this.pnLinkedInner.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pnLinkedInner.BorderWidth = 0;
-            this.pnLinkedInner.Controls.Add(this.updownLinkRatio);
             this.pnLinkedInner.Controls.Add(this.label6);
+            this.pnLinkedInner.Controls.Add(this.updownLinkRatio);
             this.pnLinkedInner.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
-            this.pnLinkedInner.Location = new System.Drawing.Point(5, 352);
+            this.pnLinkedInner.Location = new System.Drawing.Point(187, 290);
             this.pnLinkedInner.Name = "pnLinkedInner";
-            this.pnLinkedInner.Size = new System.Drawing.Size(90, 61);
+            this.pnLinkedInner.Size = new System.Drawing.Size(155, 30);
             this.pnLinkedInner.TabIndex = 16;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.ForeColor = System.Drawing.Color.White;
+            this.label6.Location = new System.Drawing.Point(-4, 7);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(75, 13);
+            this.label6.TabIndex = 15;
+            this.label6.Text = "Linking Ratio";
             // 
             // updownLinkRatio
             // 
@@ -225,7 +270,7 @@
             0,
             0,
             0});
-            this.updownLinkRatio.Location = new System.Drawing.Point(6, 28);
+            this.updownLinkRatio.Location = new System.Drawing.Point(77, 4);
             this.updownLinkRatio.Maximum = new decimal(new int[] {
             1,
             0,
@@ -269,6 +314,9 @@
             this.ClientSize = new System.Drawing.Size(360, 442);
             this.Controls.Add(this.cbEnabled);
             this.Controls.Add(this.cbLinked);
+            this.ClientSize = new System.Drawing.Size(349, 461);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.tbDuckingVolume);
@@ -280,17 +328,19 @@
             this.Controls.Add(this.updownSamplingDelay);
             this.Controls.Add(this.btnChooseProcess);
             this.Controls.Add(this.audioLevelsControl);
+            this.Controls.Add(this.tbMasterVolume);
+            this.Controls.Add(this.cbLinked);
             this.Controls.Add(this.pnLinkedInner);
             this.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.ForeColor = System.Drawing.Color.White;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Windows Volume Limiter";
-            this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.updownSamplingDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.updownRestoreDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbMonitorVolume)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbDuckingVolume)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbMasterVolume)).EndInit();
             this.pnLinkedInner.ResumeLayout(false);
             this.pnLinkedInner.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.updownLinkRatio)).EndInit();
@@ -317,6 +367,9 @@
         private System.Windows.Forms.Label label6;
         private PanelCustomBorder pnLinkedInner;
         private System.Windows.Forms.CheckBox cbEnabled;
+        private System.Windows.Forms.TrackBar tbMasterVolume;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label7;
     }
 }
 
