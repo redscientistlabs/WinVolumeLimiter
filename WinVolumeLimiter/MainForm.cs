@@ -54,6 +54,7 @@ namespace WinVolumeLimiter
                     p.FileName = file;
                     p.WorkingDirectory = Path.GetDirectoryName(file) ?? throw new InvalidOperationException();
                     Process.Start(p);
+                    StartNewMonitor(Path.GetFileNameWithoutExtension(file));
                 }
             }
         }

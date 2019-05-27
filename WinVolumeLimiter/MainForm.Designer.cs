@@ -40,10 +40,10 @@
             this.tbMasterVolume = new System.Windows.Forms.TrackBar();
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.cbEnabled = new System.Windows.Forms.CheckBox();
             this.audioLevelsControl = new WinVolumeLimiter.AudioLevelsUIControl();
             this.pnLinkedInner = new WinVolumeLimiter.PanelCustomBorder();
             this.label6 = new System.Windows.Forms.Label();
-            this.cbEnabled = new System.Windows.Forms.CheckBox();
             this.updownLinkRatio = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.updownSamplingDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.updownRestoreDelay)).BeginInit();
@@ -224,6 +224,19 @@
             this.label7.TabIndex = 19;
             this.label7.Text = "(Monitor Volume out of 130%)";
             // 
+            // cbEnabled
+            // 
+            this.cbEnabled.AutoSize = true;
+            this.cbEnabled.Checked = true;
+            this.cbEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbEnabled.Location = new System.Drawing.Point(123, 275);
+            this.cbEnabled.Name = "cbEnabled";
+            this.cbEnabled.Size = new System.Drawing.Size(68, 17);
+            this.cbEnabled.TabIndex = 17;
+            this.cbEnabled.Text = "Enabled";
+            this.cbEnabled.UseVisualStyleBackColor = true;
+            this.cbEnabled.CheckedChanged += new System.EventHandler(this.CbEnabled_CheckedChanged);
+            // 
             // audioLevelsControl
             // 
             this.audioLevelsControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -254,7 +267,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.ForeColor = System.Drawing.Color.White;
-            this.label6.Location = new System.Drawing.Point(-4, 7);
+            this.label6.Location = new System.Drawing.Point(3, 6);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(75, 13);
             this.label6.TabIndex = 15;
@@ -285,36 +298,13 @@
             0,
             65536});
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.ForeColor = System.Drawing.Color.White;
-            this.label6.Location = new System.Drawing.Point(3, 12);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(75, 13);
-            this.label6.TabIndex = 15;
-            this.label6.Text = "Linking Ratio";
-            // 
-            // cbEnabled
-            // 
-            this.cbEnabled.AutoSize = true;
-            this.cbEnabled.Location = new System.Drawing.Point(12, 419);
-            this.cbEnabled.Name = "cbEnabled";
-            this.cbEnabled.Size = new System.Drawing.Size(68, 17);
-            this.cbEnabled.TabIndex = 17;
-            this.cbEnabled.Text = "Enabled";
-            this.cbEnabled.UseVisualStyleBackColor = true;
-            this.cbEnabled.CheckedChanged += new System.EventHandler(this.CbEnabled_CheckedChanged);
-            // 
             // MainForm
             // 
             this.AllowDrop = true;
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
-            this.ClientSize = new System.Drawing.Size(360, 442);
-            this.Controls.Add(this.cbEnabled);
-            this.Controls.Add(this.cbLinked);
             this.ClientSize = new System.Drawing.Size(349, 461);
+            this.Controls.Add(this.cbEnabled);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);

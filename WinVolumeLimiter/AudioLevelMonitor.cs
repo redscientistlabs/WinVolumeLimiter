@@ -115,8 +115,13 @@ namespace WinVolumeLimiter
                 return;
             }
 
-
-            if (Process.GetProcesses().Any(x => x.Id == pid && x.ProcessName == processName) == false || ActiveSession == null)
+            Process p = null;
+            try
+            {
+                p = Process.GetProcessById(pid);
+            }
+            catch{ }
+            if (p == null || p.ProcessName != processName || ActiveSession == null)
             {
                 ActiveSession = null;
                 ActiveSession = getSession();
@@ -328,6 +333,12 @@ namespace WinVolumeLimiter
                             try
                             {
                                 ActiveSession = getSession();
+                                if (ActiveSession == null)
+                                {
+                                    masterVolume = 1.0f;
+                                    return;
+                                }
+                                    
                                 var session = ActiveSession;
                                 using (var simpleVolume = session.QueryInterface<SimpleAudioVolume>())
                                 {
