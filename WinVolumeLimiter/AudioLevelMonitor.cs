@@ -16,6 +16,7 @@ namespace WinVolumeLimiter
         System.Timers.Timer sampleTimer;
         System.Timers.Timer restoreTimer;
         private int intervalms = 25;
+        private Process process = null;
 
         public int Intervalms
         {
@@ -115,13 +116,7 @@ namespace WinVolumeLimiter
                 return;
             }
 
-            Process p = null;
-            try
-            {
-                p = Process.GetProcessById(pid);
-            }
-            catch{ }
-            if (p == null || p.ProcessName != processName || ActiveSession == null)
+            if (process == null || ActiveSession == null)
             {
                 ActiveSession = null;
                 ActiveSession = getSession();
@@ -186,20 +181,26 @@ namespace WinVolumeLimiter
                                 //This is stupid expensive
                                 var audioSessionControl2 = session.QueryInterface<AudioSessionControl2>();
                                 {
-                                    using (var process = audioSessionControl2.Process)
+                                    using (var _process = audioSessionControl2.Process)
                                     {
-                                        if (process.ProcessName != processName)
+                                        if (_process.ProcessName != processName)
                                         {
                                             continue;
                                         }
 
                                         string sessionid = audioSessionControl2.SessionIdentifier;
                                         pid = audioSessionControl2.ProcessID;
-                                        string name = audioSessionControl2.DisplayName;
-                                        if (process != null)
+                                        if (process?.Id != pid || process?.ProcessName != audioSessionControl2.Process.ProcessName)
                                         {
-                                            if (name == "") { name = process.MainWindowTitle; }
-                                            if (name == "") { name = process.ProcessName; }
+                                            process = audioSessionControl2.Process;
+                                            process.EnableRaisingEvents = true;
+                                            process.Exited += (o, e) => process = null;
+                                        }
+                                        string name = audioSessionControl2.DisplayName;
+                                        if (_process != null)
+                                        {
+                                            if (name == "") { name = _process.MainWindowTitle; }
+                                            if (name == "") { name = _process.ProcessName; }
                                         }
                                         if (name == "") { name = "--unnamed--"; }
 
