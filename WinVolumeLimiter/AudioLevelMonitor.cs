@@ -284,6 +284,9 @@ namespace WinVolumeLimiter
         {
             lock (this)
             {
+                if (ActiveSession == null)
+                    return;
+
                 try
                 {
                     var session = ActiveSession;

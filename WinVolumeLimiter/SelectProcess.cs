@@ -49,5 +49,27 @@ namespace WinVolumeLimiter
             this.DialogResult = DialogResult.OK;
             
         }
+
+        private void btnFind_Click(object sender, EventArgs e)
+        {
+            var search = tbSearch.Text.ToUpper().Trim();
+
+            int position = -1;
+            var processes = lbProcesses.Items.Cast<string>().ToList();
+            for (int i = 0; i < processes.Count; i++)
+            {
+                var p = processes[i];
+                if (p.ToUpper().Contains(search))
+                {
+                    position = i;
+                    break;
+                }
+            }
+
+            if (position != -1)
+            {
+                lbProcesses.SelectedIndex = position;
+            }
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace WinVolumeLimiter
 {
     public sealed partial class MainForm : Form
     {
-        private string version = "1.2";
+        private string version = "1.3";
         AudioLevelMonitor audioMonitor;
         private bool updating = false;
         private bool initialized = false;
